@@ -1,4 +1,5 @@
 import datetime as dt
+import os
 from typing import Any, Generator, Annotated
 from uuid import UUID
 
@@ -11,6 +12,7 @@ from app.config import Config
 from app.model.db import ClientToken, Client, AdminToken, Admin
 
 config = Config()
+os.makedirs(config.upload_dir, exist_ok=True)
 engine = create_engine(config.db_uri)
 mail_config = ConnectionConfig(
     MAIL_FROM=config.mail_from,

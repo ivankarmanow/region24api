@@ -4,9 +4,10 @@ from app.api.client import client
 from app.api.contact import contact
 from app.api.history import history
 from app.api.order import order
-from app.api.project import project, category as project_category
+from app.api.project import project
 from app.api.request import request
-from app.api.service import service, category as service_category
+from app.api.service import service
+from app.api.upload import upload
 #
 # __all__ = [
 #     "admin",

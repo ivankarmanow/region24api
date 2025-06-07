@@ -14,15 +14,22 @@ class Base(DeclarativeBase):
     ...
 
 
-class ServiceCategory(Base):
-    __tablename__ = "service_category"
+class Advantage(Base):
+    __tablename__ = "advantage"
 
     id: Mapped[int] = mapped_column(primary_key=True)
+    advantage: Mapped[str]
+    service_id: Mapped[int] = mapped_column(ForeignKey("service.id"))
+    service: Mapped["Service"] = relationship(back_populates="advantages")
 
-    title: Mapped[str]
-    image: Mapped[Optional[str]]
 
-    services: Mapped[list["Service"]] = relationship(back_populates="category")
+class Stage(Base):
+    __tablename__ = "stage"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    stage: Mapped[str]
+    service_id: Mapped[int] = mapped_column(ForeignKey("service.id"))
+    service: Mapped["Service"] = relationship(back_populates="stages")
 
 
 class Service(Base):
@@ -34,22 +41,11 @@ class Service(Base):
     image: Mapped[Optional[str]]
     description: Mapped[str]
 
-    category_id: Mapped[Optional[int]] = mapped_column(ForeignKey("service_category.id"))
-
-    category: Mapped[Optional[ServiceCategory]] = relationship(back_populates="services")
     requests: Mapped[list["Request"]] = relationship(back_populates="service")
     orders: Mapped[list["Order"]] = relationship(secondary="order_service", back_populates="services")
-
-
-class ProjectCategory(Base):
-    __tablename__ = "project_category"
-
-    id: Mapped[int] = mapped_column(primary_key=True)
-
-    title: Mapped[str]
-    image: Mapped[Optional[str]]
-
-    projects: Mapped[list["Project"]] = relationship(back_populates="category")
+    advantages: Mapped[list["Advantage"]] = relationship(back_populates="service", cascade="all, delete-orphan")
+    stages: Mapped[list["Stage"]] = relationship(back_populates="service", cascade="all, delete-orphan")
+    projects: Mapped[list["Project"]] = relationship(back_populates="service")
 
 
 class Project(Base):
@@ -58,11 +54,36 @@ class Project(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
 
     title: Mapped[str]
-    image: Mapped[Optional[str]]
+    datetime: Mapped[dt.date]
+    address: Mapped[str]
+    area: Mapped[Optional[int]]
+    period: Mapped[int]
+    price: Mapped[int]
     description: Mapped[str]
 
-    category_id: Mapped[Optional[int]] = mapped_column(ForeignKey("project_category.id"))
-    category: Mapped[Optional[ProjectCategory]] = relationship(back_populates="projects")
+    service_id: Mapped[Optional[int]] = mapped_column(ForeignKey("service.id"))
+    service: Mapped[Optional[Service]] = relationship(back_populates="projects")
+    features: Mapped[list["Feature"]] = relationship(back_populates="project", cascade="all, delete-orphan")
+    media: Mapped[list["ProjectMedia"]] = relationship(back_populates="project", cascade="all, delete-orphan")
+
+
+class Feature(Base):
+    __tablename__ = "feature"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    feature: Mapped[str]
+    project_id: Mapped[int] = mapped_column(ForeignKey("project.id"))
+    project: Mapped[Project] = relationship(back_populates="features")
+
+
+class ProjectMedia(Base):
+    __tablename__ = "project_media"
+
+    id: Mapped[int] = mapped_column(primary_key=True)
+    image: Mapped[str]
+    is_main: Mapped[bool] = mapped_column(default=False)
+    project_id: Mapped[int] = mapped_column(ForeignKey("project.id"))
+    project: Mapped[Project] = relationship(back_populates="media")
 
 
 class Contact(Base):

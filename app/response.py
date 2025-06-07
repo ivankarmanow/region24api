@@ -9,3 +9,7 @@ class APIResponse(BaseModel):
 
 class AuthToken(APIResponse):
     token: UUID
+
+
+class UploadedFile(APIResponse):
+    filename: str

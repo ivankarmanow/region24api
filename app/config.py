@@ -1,4 +1,4 @@
-from pydantic import EmailStr, SecretStr, HttpUrl
+from pydantic import EmailStr, SecretStr, HttpUrl, DirectoryPath
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -11,5 +11,6 @@ class Config(BaseSettings):
     mail_host: str
     mail_port: int
     mail_from: EmailStr
+    upload_dir: DirectoryPath
 
     model_config = SettingsConfigDict(env_file=".env")
