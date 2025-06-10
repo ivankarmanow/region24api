@@ -5,7 +5,7 @@ from app.dependencies import SessionDep, AdminAuth
 from app.model.db import Client as ClientDB
 from app.model.schema.client.core import Client, ClientIn
 from app.model.schema.client.depends import ClientList
-from app.response import APIResponse
+from app.response import APIResponse, ClientCreated
 
 client = APIRouter(tags=["client"], prefix="/client")
 
@@ -18,9 +18,15 @@ async def client_list(session: SessionDep, admin: AdminAuth) -> list[Client]:
 
 @client.post("/create")
 async def create_client(session: SessionDep, client: ClientIn) -> APIResponse:
-    session.add(ClientDB(**client.model_dump()))
-    session.commit()
-    return APIResponse()
+    client = session.execute(select(ClientDB).where(ClientDB.email == client.email)).scalar_one_or_none()
+    if client:
+        client_id = client.id
+    else:
+        client = ClientDB(**client.model_dump())
+        session.add(client)
+        session.commit()
+        client_id = client.id
+    return ClientCreated(client_id=client_id)
 
 
 @client.put("/edit")

@@ -13,3 +13,6 @@ class AuthToken(APIResponse):
 
 class UploadedFile(APIResponse):
     filename: str
+
+class ClientCreated(APIResponse):
+    client_id: int

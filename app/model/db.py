@@ -103,7 +103,7 @@ class Client(Base):
 
     name: Mapped[str]
     phone: Mapped[Optional[str]]
-    email: Mapped[str]
+    email: Mapped[str] = mapped_column(unique=True)
     comment: Mapped[Optional[str]]
 
     requests: Mapped[list["Request"]] = relationship(back_populates="client")
