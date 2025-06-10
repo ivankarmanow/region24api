@@ -10,8 +10,8 @@ from app.response import UploadedFile
 upload = APIRouter(tags=["upload"], prefix="/upload")
 
 
-@upload.post("/upload")
-async def upload_file(file: UploadFile, admin: SuperAdmin):
+@upload.post("/upload", response_model=UploadedFile)
+async def upload_file(file: UploadFile, admin: SuperAdmin) -> UploadedFile:
     file_extension = file.filename.split(".")[-1]
     random_filename = f"{uuid.uuid4()}.{file_extension}"
     file_path = os.path.join(config.upload_dir, random_filename)
