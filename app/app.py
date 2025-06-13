@@ -1,5 +1,7 @@
 from fastapi import FastAPI, HTTPException
+from fastapi.staticfiles import StaticFiles
 
+from app.dependencies import config
 from app.api import admin, admin_auth, client, contact, history, order, project, request, service, upload, auth
 from app.error import exception_handler, http_exception_handler
 
@@ -7,6 +9,9 @@ app = FastAPI(title="Region24 API", summary="API веб-сайта Регион2
 
 app.add_exception_handler(HTTPException, http_exception_handler)
 app.add_exception_handler(Exception, exception_handler)
+
+static = StaticFiles(directory=config.upload_dir)
+app.mount("/static", static)
 
 admin.include_router(admin_auth)
 app.include_router(admin)
