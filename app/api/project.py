@@ -33,6 +33,8 @@ async def edit_project(session: SessionDep, project_id: int, project: ProjectIn,
     for key, value in project.model_dump().items():
         if key == "features":
             old_obj.features = [Feature(feature=i) for i in value]
+        elif key == "media":
+            old_obj.media = [ProjectMedia(image=i['image'], is_main=i['is_main']) for i in value]
         else:
             setattr(old_obj, key, value)
     session.add(old_obj)
