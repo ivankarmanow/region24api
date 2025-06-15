@@ -16,6 +16,12 @@ async def request_list(session: SessionDep, admin: AdminAuth) -> list[Request]:
     return requests
 
 
+@request.get("/my")
+async def request_my(session: SessionDep, client: ClientAuth) -> list[Request]:
+    requests = session.scalars(select(RequestDB).where(RequestDB.client_id == client.id)).all()
+    return requests
+
+
 @request.post("/new")
 async def request_new(session: SessionDep, request: RequestIn, client: ClientAuth) -> APIResponse:
     db = RequestDB(**request.model_dump())
