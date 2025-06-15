@@ -17,10 +17,10 @@ async def client_list(session: SessionDep, admin: AdminAuth) -> list[Client]:
 
 
 @client.post("/create")
-async def create_client(session: SessionDep, client: ClientIn) -> APIResponse:
-    client = session.execute(select(ClientDB).where(ClientDB.email == client.email)).scalar_one_or_none()
-    if client:
-        client_id = client.id
+async def create_client(session: SessionDep, client: ClientIn) -> ClientCreated:
+    client_db = session.execute(select(ClientDB).where(ClientDB.email == client.email)).scalar_one_or_none()
+    if client_db:
+        client_id = client_db.id
     else:
         client = ClientDB(**client.model_dump())
         session.add(client)
