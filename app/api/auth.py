@@ -8,7 +8,7 @@ from sqlalchemy import select
 
 from app.dependencies import SessionDep, MailData, ClientAuth
 from app.model.db import Client, ClientToken
-from app.response import APIResponse, AuthToken
+from app.response import APIResponse, AuthToken, ClientTokenCheck
 
 auth = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -62,8 +62,8 @@ async def verify(code: int, session: SessionDep):
 
 
 @auth.get("/check_token")
-async def check_token(client: ClientAuth):
-    return APIResponse()
+async def check_token(client: ClientAuth) -> ClientTokenCheck:
+    return ClientTokenCheck(client_id=client.id, name=client.name, email=client.email, phone=client.phone)
 
 
 @auth.post("/logout")

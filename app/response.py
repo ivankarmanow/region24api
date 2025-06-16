@@ -33,3 +33,10 @@ class EmailExists(APIResponse):
 class AdminTokenCheck(APIResponse):
     admin_id: int
     superadmin: bool = Field(default=False)
+
+class ClientTokenCheck(APIResponse):
+    client_id: int
+    name: str
+    email: str
+    phone: str | None = Field(default=None)
+
