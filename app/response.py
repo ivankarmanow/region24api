@@ -20,3 +20,8 @@ class ClientCreated(APIResponse):
 class AuthRequired(APIResponse):
     client_id: int
     auth_required: bool = Field(default=False)
+
+class EmailExists(APIResponse):
+    email: str
+    exists: bool = Field(default=True)
+    client_id: int | None = Field(default=None)

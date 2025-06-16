@@ -5,7 +5,7 @@ from app.dependencies import SessionDep, AdminAuth, ClientAuth
 from app.model.db import Client as ClientDB
 from app.model.schema.client.core import Client, ClientIn
 from app.model.schema.client.depends import ClientList
-from app.response import APIResponse, ClientCreated, AuthRequired
+from app.response import APIResponse, ClientCreated, AuthRequired, EmailExists
 
 client = APIRouter(tags=["client"], prefix="/client")
 
@@ -14,6 +14,19 @@ client = APIRouter(tags=["client"], prefix="/client")
 async def client_list(session: SessionDep, admin: AdminAuth) -> list[Client]:
     clients = session.scalars(select(ClientDB)).all()
     return clients
+
+
+@client.get("/email_exists")
+async def client_email_exists(session: SessionDep, email: str) -> EmailExists:
+    resp = EmailExists(email=email)
+    clt = session.execute(select(ClientDB).where(ClientDB.email == email)).scalar_one_or_none()
+    if clt:
+        resp.exists = True
+        resp.client_id = clt.id
+    else:
+        resp.exists = False
+    return resp
+
 
 
 @client.post("/create")
