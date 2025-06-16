@@ -43,7 +43,7 @@ async def edit_client(session: SessionDep, client_id: int, client: ClientIn, adm
 
 @client.put("/edit_my")
 async def edit_my_client(session: SessionDep, old_client: ClientAuth, new_client: ClientIn) -> AuthRequired:
-    resp = AuthRequired(client_id=old_client.client_id)
+    resp = AuthRequired(client_id=old_client.id)
     old_client.name = new_client.name
     if new_client.email and new_client.email != old_client.email:
         if session.execute(select(ClientDB).where(ClientDB.email == new_client.email)).one_or_none():
