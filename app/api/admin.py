@@ -14,7 +14,7 @@ from app.dependencies import SessionDep
 from app.model.db import Admin as AdminDB, AdminToken
 from app.model.schema.admin.core import Admin, AdminIn
 from app.model.schema.admin.depends import AdminList
-from app.response import APIResponse
+from app.response import APIResponse, AdminTokenCheck
 from app.response import AuthToken
 
 admin = APIRouter(prefix="/admin", tags=["admin"])
@@ -98,8 +98,8 @@ async def admin_login(login: str, password: str, session: SessionDep) -> AuthTok
 
 
 @auth.get("/check_token")
-async def check_token(session: SessionDep, admin: AdminAuth) -> APIResponse:
-    return APIResponse()
+async def check_token(session: SessionDep, admin: AdminAuth) -> AdminTokenCheck:
+    return AdminTokenCheck(admin_id=admin.id, superadmin=admin.can_edit_content)
 
 
 @auth.post("/logout")
