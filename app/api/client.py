@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from sqlalchemy import select
 
-from app.dependencies import SessionDep, AdminAuth
+from app.dependencies import SessionDep, AdminAuth, ClientAuth
 from app.model.db import Client as ClientDB
 from app.model.schema.client.core import Client, ClientIn
 from app.model.schema.client.depends import ClientList
@@ -37,6 +37,21 @@ async def edit_client(session: SessionDep, client_id: int, client: ClientIn, adm
     for key, value in client.model_dump().items():
         setattr(old_obj, key, value)
     session.add(old_obj)
+    session.commit()
+    return APIResponse()
+
+
+@client.put("/edit_my")
+async def edit_my_client(session: SessionDep, old_client: ClientAuth, new_client: ClientIn) -> APIResponse:
+    old_client.name = new_client.name
+    if new_client.email:
+        if session.execute(select(ClientDB).where(ClientDB.email == new_client.email)).one_or_none():
+            raise HTTPException(status_code=400, detail="Email already registered")
+        old_client.email = new_client.email
+    if new_client.phone:
+        old_client.phone = new_client.phone
+    old_client.tokens = []
+    session.add(old_client)
     session.commit()
     return APIResponse()
 

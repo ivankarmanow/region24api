@@ -109,7 +109,7 @@ class Client(Base):
     requests: Mapped[list["Request"]] = relationship(back_populates="client")
     orders: Mapped[list["Order"]] = relationship(back_populates="client")
     actions: Mapped[list["ActionHistory"]] = relationship(back_populates="client")
-    tokens: Mapped[list["ClientToken"]] = relationship(back_populates="client")
+    tokens: Mapped[list["ClientToken"]] = relationship(back_populates="client", cascade="all, delete-orphan")
 
 
 class ClientToken(Base):
