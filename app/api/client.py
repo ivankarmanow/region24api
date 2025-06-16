@@ -5,7 +5,7 @@ from app.dependencies import SessionDep, AdminAuth, ClientAuth
 from app.model.db import Client as ClientDB
 from app.model.schema.client.core import Client, ClientIn
 from app.model.schema.client.depends import ClientList
-from app.response import APIResponse, ClientCreated
+from app.response import APIResponse, ClientCreated, AuthRequired
 
 client = APIRouter(tags=["client"], prefix="/client")
 
@@ -42,18 +42,20 @@ async def edit_client(session: SessionDep, client_id: int, client: ClientIn, adm
 
 
 @client.put("/edit_my")
-async def edit_my_client(session: SessionDep, old_client: ClientAuth, new_client: ClientIn) -> APIResponse:
+async def edit_my_client(session: SessionDep, old_client: ClientAuth, new_client: ClientIn) -> AuthRequired:
+    resp = AuthRequired(client_id=old_client.client_id)
     old_client.name = new_client.name
-    if new_client.email:
+    if new_client.email and new_client.email != old_client.email:
         if session.execute(select(ClientDB).where(ClientDB.email == new_client.email)).one_or_none():
             raise HTTPException(status_code=400, detail="Email already registered")
         old_client.email = new_client.email
+        old_client.tokens = []
+        resp.auth_required = True
     if new_client.phone:
         old_client.phone = new_client.phone
-    old_client.tokens = []
     session.add(old_client)
     session.commit()
-    return APIResponse()
+    return resp
 
 
 @client.delete("/delete")

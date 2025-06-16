@@ -16,3 +16,7 @@ class UploadedFile(APIResponse):
 
 class ClientCreated(APIResponse):
     client_id: int
+
+class AuthRequired(APIResponse):
+    client_id: int
+    auth_required: bool = Field(default=False)
